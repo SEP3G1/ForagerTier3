@@ -30,6 +30,10 @@ namespace ForagerWebAPIDB.Controllers
             try
             {
                 List<Listing> listings = await listingService.GetAllListings();
+                foreach(Listing l in listings)
+                {
+                    l.Product = await listingService.GetProduct(l.ProductId + "");
+                }
                 return Ok(listings);
             }
             catch (Exception e)
@@ -49,7 +53,7 @@ namespace ForagerWebAPIDB.Controllers
             try
             {
                 Listing listing = await listingService.GetListing(id);
-                listing.Product = await listingService.GetProduct(id + "");
+                listing.Product = await listingService.GetProduct(listing.ProductId + "");
                 return Ok(listing);
             }
             catch (Exception e)
