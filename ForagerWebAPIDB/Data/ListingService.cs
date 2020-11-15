@@ -27,10 +27,34 @@ namespace ForagerWebAPIDB.Data
             return newlyAdded.Entity.ListingId + "";
         }
 
-        public async Task<List<Listing>> GetAllListings()
+        public async Task<List<Listing>> GetAllListings(string parameter)
         {
-            List<Listing> listings = await ctx.listings.ToListAsync();
+            IQueryable<Listing> q = ctx.listings;
+            List<Listing> listings = new List<Listing>();
 
+            if (parameter == null || parameter.Length == 0)
+            {
+                listings = await q.ToListAsync();
+            }
+            else
+            {
+                q.Include(l => l.Product);
+                q.Include(l => l.Product.ProductCategory);             
+                q.Include(l => l.Product.Name);             
+                
+                try
+                {
+                    listings = await q.Where(l =>
+            l.Product.ProductCategory.Equals(parameter) ||
+            l.Product.Name.Equals(parameter)
+            ).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error in GetAllListings");
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
             return listings.OrderByDescending(o => o.ListingId).ToList();
         }
 

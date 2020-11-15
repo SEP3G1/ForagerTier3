@@ -8,7 +8,7 @@ namespace ForagerWebAPIDB.Data
     {
         Task<string> CreateListing(Listing listing);
         Task<Listing> GetListing(string id);
-        Task<List<Listing>> GetAllListings();
+        Task<List<Listing>> GetAllListings(string productCategory);
         Task<Product> GetProduct(string id);
         Task<List<string>> GetProductCategories();
         Task<List<Product>> GetProducts();

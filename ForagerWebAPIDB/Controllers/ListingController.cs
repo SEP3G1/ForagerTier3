@@ -20,7 +20,7 @@ namespace ForagerWebAPIDB.Controllers
             this.listingService = listingService;
         }
         [HttpGet]
-        public async Task<ActionResult<List<Listing>>> GetAllListings()
+        public async Task<ActionResult<List<Listing>>> GetAllListings([FromQuery] string parameter)
         {
             if (!ModelState.IsValid)
             {
@@ -29,7 +29,7 @@ namespace ForagerWebAPIDB.Controllers
 
             try
             {
-                List<Listing> listings = await listingService.GetAllListings();
+                List<Listing> listings = await listingService.GetAllListings(parameter);
                 foreach(Listing l in listings)
                 {
                     l.Product = await listingService.GetProduct(l.ProductId + "");
