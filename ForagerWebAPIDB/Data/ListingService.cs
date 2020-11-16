@@ -46,7 +46,8 @@ namespace ForagerWebAPIDB.Data
                 {
                     listings = await q.Where(l =>
             l.Product.ProductCategory.Equals(parameter) ||
-            l.Product.Name.Equals(parameter)
+            l.Product.Name.Equals(parameter) ||
+            l.Postcode.Equals(parameter)
             ).ToListAsync();
                 }
                 catch (Exception e)
