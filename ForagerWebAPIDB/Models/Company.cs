@@ -13,7 +13,7 @@ namespace ForagerWebAPIDB.Models
         public int NumberOfVotes { get; set; }
         public string Name { get; set; } // Udfyld
         public string Address { get; set; } // Udfyld
-        public string Postcode { get; set; } // Udfyld
+        public string PostCode { get; set; } // Udfyld
         public string Logo { get; set; }
         public List<Employee> Employees { get; set; }
         public string ConnectionAddress { get; set; } //Udfyld // Skal kun indeholde selve ip-adressen ikke http/https.
