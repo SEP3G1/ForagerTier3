@@ -31,6 +31,7 @@ namespace ForagerWebAPIDB
             services.AddDbContext<ForagerDBContext>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IListingService, ListingService>();
+            services.AddScoped<ICompanyService, CompanyService>();
 
         }
 
