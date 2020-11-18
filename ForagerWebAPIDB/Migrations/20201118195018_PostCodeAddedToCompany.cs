@@ -2,7 +2,7 @@
 
 namespace ForagerWebAPIDB.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class PostCodeAddedToCompany : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,8 +16,10 @@ namespace ForagerWebAPIDB.Migrations
                     TrustScore = table.Column<double>(type: "REAL", nullable: false),
                     NumberOfVotes = table.Column<int>(type: "INTEGER", nullable: false),
                     Name = table.Column<string>(type: "TEXT", nullable: true),
-                    Location = table.Column<string>(type: "TEXT", nullable: true),
-                    Logo = table.Column<string>(type: "TEXT", nullable: true)
+                    Address = table.Column<string>(type: "TEXT", nullable: true),
+                    Postcode = table.Column<string>(type: "TEXT", nullable: true),
+                    Logo = table.Column<string>(type: "TEXT", nullable: true),
+                    ConnectionAddress = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {

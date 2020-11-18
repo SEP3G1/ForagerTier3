@@ -8,8 +8,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ForagerWebAPIDB.Migrations
 {
     [DbContext(typeof(ForagerDBContext))]
-    [Migration("20201112090358_InitialCreate2")]
-    partial class InitialCreate2
+    [Migration("20201118195018_PostCodeAddedToCompany")]
+    partial class PostCodeAddedToCompany
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,10 +23,13 @@ namespace ForagerWebAPIDB.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Cvr")
+                    b.Property<string>("Address")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Location")
+                    b.Property<string>("ConnectionAddress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Cvr")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Logo")
@@ -37,6 +40,9 @@ namespace ForagerWebAPIDB.Migrations
 
                     b.Property<int>("NumberOfVotes")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Postcode")
+                        .HasColumnType("TEXT");
 
                     b.Property<double>("TrustScore")
                         .HasColumnType("REAL");
