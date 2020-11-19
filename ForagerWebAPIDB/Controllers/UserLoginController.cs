@@ -33,5 +33,21 @@ namespace ForagerWebAPIDB.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<User>> GetUserAsync([FromQuery] int id)
+        {
+            User user;
+            try
+            {
+                user = await users.GetUserAsync(id);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace ForagerWebAPIDB.Models
 {
@@ -15,6 +16,7 @@ namespace ForagerWebAPIDB.Models
         public string Address { get; set; } // Udfyld
         public string PostCode { get; set; } // Udfyld
         public string Logo { get; set; }
+
         public List<Employee> Employees { get; set; }
         public string ConnectionAddress { get; set; } //Udfyld // Skal kun indeholde selve ip-adressen ikke http/https.
 

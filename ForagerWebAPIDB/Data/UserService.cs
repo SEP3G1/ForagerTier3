@@ -27,10 +27,13 @@ namespace ForagerWebAPIDB.Data
             //2 = Cam view, create and delete ToDos determined by Role
         }
 
+        public async Task<User> GetUserAsync(int Id)
+        {
+            return await ctx.Users.FirstAsync(u => u.UserId == Id);
+        }
 
         public async Task<User> ValidateUserAsync(string Email, string password)
         {
-            IQueryable<User> result = ctx.Users.Where(c => c.Email.Equals(Email));
             User first = await ctx.Users.FirstAsync(user => user.Email.Equals(Email));
             if (first == null)
             {
