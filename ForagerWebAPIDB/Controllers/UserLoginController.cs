@@ -34,7 +34,7 @@ namespace ForagerWebAPIDB.Controllers
             }
         }
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<User>> GetUserAsync([FromQuery] int id)
+        public async Task<ActionResult<User>> GetUserAsync(int id)
         {
             User user;
             try
