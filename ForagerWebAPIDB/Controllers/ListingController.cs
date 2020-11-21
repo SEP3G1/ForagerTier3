@@ -84,5 +84,26 @@ namespace ForagerWebAPIDB.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+        [HttpPost("{Listing}")]
+        public async Task<ActionResult<string>> UpdateListing(string Listing)
+        {
+            Listing listing = JsonSerializer.Deserialize<Listing>(Listing);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string id = await listingService.UpdateListing(listing);
+                return Ok(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

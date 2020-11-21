@@ -27,6 +27,16 @@ namespace ForagerWebAPIDB.Data
             return newlyAdded.Entity.ListingId + "";
         }
 
+        public async Task<string> UpdateListing(Listing listing)
+        {
+            //If product is not set to null the product will be added to db twice
+            listing.Product = null; 
+            ctx.listings.Attach(listing);
+            ctx.Entry(listing).State = EntityState.Modified;
+            await ctx.SaveChangesAsync();
+
+            return listing.ListingId + "";
+        }
         public async Task<List<Listing>> GetAllListings(string parameter)
         {
             IQueryable<Listing> q = ctx.listings;
