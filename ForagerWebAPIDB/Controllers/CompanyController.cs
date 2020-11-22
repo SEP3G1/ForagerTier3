@@ -63,5 +63,26 @@ namespace ForagerWebAPIDB.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<ActionResult<string>> UpdateCompany([FromQuery] string companyAsString)
+        {
+            Company company = JsonSerializer.Deserialize<Company>(companyAsString);
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string id = await companyService.UpdateCompany(company);
+                return Ok(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
     }
 }

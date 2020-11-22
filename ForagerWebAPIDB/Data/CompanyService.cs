@@ -31,5 +31,19 @@ namespace ForagerWebAPIDB.Data
             int idInt = int.Parse(id);
             return await ctx.Companies.FirstAsync(c => c.CompanyId == idInt);
         }
+
+        public async Task<string> UpdateCompany(Company company)
+        {
+            Company companyToUpdate = ctx.Companies.First(c => c.CompanyId == company.CompanyId);
+            companyToUpdate.Cvr = company.Cvr;
+            companyToUpdate.PostCode = company.PostCode;
+            companyToUpdate.Name = company.Name;
+            companyToUpdate.ConnectionAddress = company.ConnectionAddress;
+            companyToUpdate.Address = company.Address;
+
+            ctx.Companies.Update(companyToUpdate);
+            await ctx.SaveChangesAsync();
+            return companyToUpdate.CompanyId + "";
+        }
     }
 }

@@ -10,6 +10,6 @@ namespace ForagerWebAPIDB.Data
     {
         Task<string> CreateCompany(Company company);
         Task<Company> GetCompany(string id);
-
+        Task<string> UpdateCompany(Company company);
     }
 }
