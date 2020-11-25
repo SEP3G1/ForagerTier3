@@ -19,29 +19,64 @@ namespace ForagerWebAPIDB.Controllers
         {
             this.listingService = listingService;
         }
-        [HttpGet]
-        public async Task<ActionResult<List<Listing>>> GetAllListings([FromQuery] string parameter)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
+      // [HttpGet]
+      //  public async Task<ActionResult<List<Listing>>> GetAllListings([FromQuery] string parameter)
+      //  {
+      //      if (!ModelState.IsValid)
+      //      {
+      //          return BadRequest(ModelState);
+      //      }
+      //
+      //      try
+      //      {
+      //          List<Listing> listings = await listingService.GetAllListings(parameter);
+      //          foreach(Listing l in listings)
+      //          {
+      //              l.Product = await listingService.GetProduct(l.ProductId + "");
+      //          }
+      //          return Ok(listings);
+      //      }
+      //      catch (Exception e)
+      //      {
+      //          Console.WriteLine(e);
+      //          return StatusCode(500, e.Message);
+      //      }
+      //  }
 
-            try
-            {
-                List<Listing> listings = await listingService.GetAllListings(parameter);
-                foreach(Listing l in listings)
+       [HttpGet]
+       public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
+       {
+           if (!ModelState.IsValid)
+           {
+               return BadRequest(ModelState);
+           }
+      
+           try
+           {
+                List<Listing> listings = new List<Listing>();
+                if (filter == null && sequencenumber == 0)
                 {
-                    l.Product = await listingService.GetProduct(l.ProductId + "");
+                    Console.WriteLine("(filter == null && sequencenumber == 0)       IN         ListingController");
+                    listings = await listingService.GetAllListings(parameter);
                 }
-                return Ok(listings);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return StatusCode(500, e.Message);
-            }
-        }
+                else
+                {
+                    Console.WriteLine("NOT (filter == null && sequencenumber == 0)       IN         ListingController");
+                    listings = await listingService.GetAllListings(parameter, filter, sequencenumber);
+                }
+               foreach (Listing l in listings)
+               {
+                   l.Product = await listingService.GetProduct(l.ProductId + "");
+               }
+               return Ok(listings);
+           }
+           catch (Exception e)
+           {
+               Console.WriteLine(e);
+               return StatusCode(500, e.Message);
+           }
+       }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Listing>> GetListing(string id)
         {

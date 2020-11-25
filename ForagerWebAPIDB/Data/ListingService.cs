@@ -44,6 +44,7 @@ namespace ForagerWebAPIDB.Data
 
             if (parameter == null || parameter.Length == 0)
             {
+                Console.WriteLine("parameter == null || parameter.Length == 0 - IN GetAllListings(string parameter)");
                 listings = await q.ToListAsync();
             }
             else
@@ -59,6 +60,51 @@ namespace ForagerWebAPIDB.Data
             l.Product.Name.Equals(parameter) ||
             l.Postcode.Equals(parameter)
             ).ToListAsync();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error in GetAllListings");
+                    Console.WriteLine(e.StackTrace);
+                }
+            }
+            return listings.OrderByDescending(o => o.ListingId).ToList();
+        }
+
+        public async Task<List<Listing>> GetAllListings(string parameter, string filter, int sequenceNumber)
+        {
+            if(filter == null && sequenceNumber == 0)
+            {
+                Console.WriteLine("filter == null && sequenceNumber == 0");
+                return await GetAllListings(parameter);
+            }
+
+            IQueryable<Listing> q = ctx.listings;
+
+            if (filter.Equals("pricelowtohigh"))
+            {
+                q = q.OrderBy(l => l.Price);
+            }
+
+            List<Listing> listings = new List<Listing>();
+
+            if (parameter == null || parameter.Length == 0)
+            {
+                Console.WriteLine("parameter == null || parameter.Length == 0 - IN GetAllListings(string parameter, string filter, int sequenceNumber)");
+                listings = await q.Skip(sequenceNumber).Take(2).ToListAsync(); //TODO 2 er hardcode lige nu. #patrick
+            }
+            else
+            {
+                q.Include(l => l.Product);
+                q.Include(l => l.Product.ProductCategory);
+                q.Include(l => l.Product.Name);
+
+                try
+                {
+                    listings = await q.Where(l =>
+            l.Product.ProductCategory.Equals(parameter) ||
+            l.Product.Name.Equals(parameter) ||
+            l.Postcode.Equals(parameter)
+            ).Skip(sequenceNumber).Take(2).ToListAsync();  ///OBS patrick klienten skal sige hvor mange den vil have ad gangen. #getridofhardcode
                 }
                 catch (Exception e)
                 {
@@ -97,5 +143,6 @@ namespace ForagerWebAPIDB.Data
         {
             return await ctx.Products.ToListAsync();
         }
+
     }
 }
