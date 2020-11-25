@@ -32,6 +32,7 @@ namespace ForagerWebAPIDB
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IListingService, ListingService>();
             services.AddScoped<ICompanyService, CompanyService>();
+            services.AddScoped<IReportService, ReportService>();
 
         }
 

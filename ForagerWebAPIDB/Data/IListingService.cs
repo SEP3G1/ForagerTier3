@@ -13,5 +13,6 @@ namespace ForagerWebAPIDB.Data
         Task<Product> GetProduct(string id);
         Task<List<string>> GetProductCategories();
         Task<List<Product>> GetProducts();
+
     }
 }

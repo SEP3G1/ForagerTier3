@@ -97,5 +97,7 @@ namespace ForagerWebAPIDB.Data
         {
             return await ctx.Products.ToListAsync();
         }
+
+
     }
 }
