@@ -72,7 +72,7 @@ namespace ForagerWebAPIDB.Data
         public async Task<Listing> GetListing(string id)
         {
             int idInt = int.Parse(id);
-            return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
+            return await ctx.listings.FirstOrDefaultAsync(c => c.ListingId == idInt);
         }
         public async Task<Product> GetProduct(string id)
         {
@@ -98,6 +98,12 @@ namespace ForagerWebAPIDB.Data
             return await ctx.Products.ToListAsync();
         }
 
-
+        public async Task<string> DeleteListing(int listingId)
+        {
+            Listing toRemove = ctx.listings.First(l => l.ListingId == listingId);
+            ctx.Remove(toRemove);
+            await ctx.SaveChangesAsync();
+            return "Success";
+        }
     }
 }
