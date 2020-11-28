@@ -61,7 +61,7 @@ namespace ForagerWebAPIDB.Controllers
                 }
                 else
                 {
-                    Console.WriteLine("NOT (filter == null && sequencenumber == 0)       IN         ListingController");
+                    Console.WriteLine("NOT (filter == null && sequencenumber == 0)       IN         ListingController. filter: " + filter + " + seqnumber: " + sequencenumber);
                     listings = await listingService.GetAllListings(parameter, filter, sequencenumber);
                 }
                foreach (Listing l in listings)

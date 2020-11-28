@@ -79,10 +79,19 @@ namespace ForagerWebAPIDB.Data
             }
 
             IQueryable<Listing> q = ctx.listings;
-
-            if (filter.Equals("pricelowtohigh"))
+            Console.WriteLine($"\n\n filter: {filter} \n\n");
+            switch (filter)
             {
-                q = q.OrderBy(l => l.Price);
+                case null: q = q.OrderByDescending(l => l.ListingId);
+                    break;
+                case "priceAscending": q = q.OrderBy(l => l.Price);                    
+                    break;
+                case "bestBeforeAscending": q = q.OrderBy(l => l.BestBefore);               
+                    break;
+                case "bestBeforeDescending": q = q.OrderByDescending(l => l.BestBefore);   
+                    break;
+                case "distanceAscending": q = q.OrderByDescending(l => l.Price); //For debugging #patrick
+                    break;
             }
 
             List<Listing> listings = new List<Listing>();
@@ -98,13 +107,40 @@ namespace ForagerWebAPIDB.Data
                 q.Include(l => l.Product.ProductCategory);
                 q.Include(l => l.Product.Name);
 
+                q = q.Where(l =>
+l.Product.ProductCategory.Equals(parameter) ||
+l.Product.Name.Equals(parameter) ||
+l.Postcode.Equals(parameter)
+);
+
+                /*Når jeg har forsøgt at kalde "OrderByDescending" tidligere end dette, så virker sorteringen ikke,
+mens jeg sorteringen virker fint, hvis "OrderBy" kaldes tidligere. 
+Jeg tror det skyldes at "Linq to Entities does not guarantee to maintain the order established by OrderByDescending()"
+som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydescending-first-and-the-nefarious-defaultifempty/7615289#7615289
+*/
+                switch (filter)
+                {
+                    case "priceAscending":
+                        q = q.OrderBy(l => l.Price);
+                        break;
+                    case "bestBeforeAscending":
+                        q = q.OrderBy(l => l.BestBefore);
+                        break;
+                    case "bestBeforeDescending":
+                        q = q.OrderByDescending(l => l.BestBefore);
+                        break;
+                    case "distanceAscending":
+                        q = q.OrderByDescending(l => l.Price); //For debugging #patrick
+                        break;
+                    default:
+                        q = q.OrderByDescending(l => l.ListingId);
+                        break;
+
+                }
+
                 try
                 {
-                    listings = await q.Where(l =>
-            l.Product.ProductCategory.Equals(parameter) ||
-            l.Product.Name.Equals(parameter) ||
-            l.Postcode.Equals(parameter)
-            ).Skip(sequenceNumber).Take(2).ToListAsync();  ///OBS patrick klienten skal sige hvor mange den vil have ad gangen. #getridofhardcode
+                   listings = await q.Skip(sequenceNumber).Take(2).ToListAsync();  ///OBS #patrick klienten skal sige hvor mange den vil have ad gangen. #getridofhardcode
                 }
                 catch (Exception e)
                 {
@@ -112,7 +148,7 @@ namespace ForagerWebAPIDB.Data
                     Console.WriteLine(e.StackTrace);
                 }
             }
-            return listings.OrderByDescending(o => o.ListingId).ToList();
+            return listings;
         }
 
         public async Task<Listing> GetListing(string id)
