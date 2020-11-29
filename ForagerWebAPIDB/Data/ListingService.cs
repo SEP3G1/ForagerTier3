@@ -37,7 +37,14 @@ namespace ForagerWebAPIDB.Data
 
             return listing.ListingId + "";
         }
-        public async Task<List<Listing>> GetAllListings(string parameter)
+
+        public async Task<Listing> GetListing(string id)
+        {
+            int idInt = int.Parse(id);
+            return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
+        }
+
+        public async Task<List<Listing>> GetListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom?
         {
             IQueryable<Listing> q = ctx.listings;
             List<Listing> listings = new List<Listing>();
@@ -63,19 +70,19 @@ namespace ForagerWebAPIDB.Data
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error in GetAllListings");
+                    Console.WriteLine("Error in GetListings(string parameter)");
                     Console.WriteLine(e.StackTrace);
                 }
             }
             return listings.OrderByDescending(o => o.ListingId).ToList();
         }
 
-        public async Task<List<Listing>> GetAllListings(string parameter, string filter, int sequenceNumber)
+        public async Task<List<Listing>> GetListings(string parameter, string filter, int sequenceNumber)
         {
             if(filter == null && sequenceNumber == 0)
             {
                 Console.WriteLine("filter == null && sequenceNumber == 0");
-                return await GetAllListings(parameter);
+                return await GetListings(parameter);
             }
 
             IQueryable<Listing> q = ctx.listings;
@@ -144,18 +151,33 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine("Error in GetAllListings");
+                    Console.WriteLine("Error in GetListings(string parameter, string filter, int sequenceNumber)");
                     Console.WriteLine(e.StackTrace);
                 }
             }
             return listings;
         }
 
-        public async Task<Listing> GetListing(string id)
+        public async Task<List<string>> GetListingPostCodes()
         {
-            int idInt = int.Parse(id);
-            return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
+            List<string> listingPostCodes = new List<string>();
+            List<Listing> listings = new List<Listing>();
+
+                try
+                {
+                listings = await ctx.listings.ToListAsync();
+                listings.ForEach(l => listingPostCodes.Add(l.Postcode));
+                listingPostCodes = listingPostCodes.Distinct().ToList();
+                }
+
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error in GetListingPostCodes");
+                    Console.WriteLine(e.StackTrace);
+                }
+            return listingPostCodes.OrderBy(p => p).ToList();
         }
+
         public async Task<Product> GetProduct(string id)
         {
             int idInt = int.Parse(id);

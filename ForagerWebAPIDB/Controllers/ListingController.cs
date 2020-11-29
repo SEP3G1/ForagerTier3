@@ -19,29 +19,6 @@ namespace ForagerWebAPIDB.Controllers
         {
             this.listingService = listingService;
         }
-      // [HttpGet]
-      //  public async Task<ActionResult<List<Listing>>> GetAllListings([FromQuery] string parameter)
-      //  {
-      //      if (!ModelState.IsValid)
-      //      {
-      //          return BadRequest(ModelState);
-      //      }
-      //
-      //      try
-      //      {
-      //          List<Listing> listings = await listingService.GetAllListings(parameter);
-      //          foreach(Listing l in listings)
-      //          {
-      //              l.Product = await listingService.GetProduct(l.ProductId + "");
-      //          }
-      //          return Ok(listings);
-      //      }
-      //      catch (Exception e)
-      //      {
-      //          Console.WriteLine(e);
-      //          return StatusCode(500, e.Message);
-      //      }
-      //  }
 
        [HttpGet]
        public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
@@ -57,12 +34,12 @@ namespace ForagerWebAPIDB.Controllers
                 if (filter == null && sequencenumber == 0)
                 {
                     Console.WriteLine("(filter == null && sequencenumber == 0)       IN         ListingController");
-                    listings = await listingService.GetAllListings(parameter);
+                    listings = await listingService.GetListings(parameter);
                 }
                 else
                 {
                     Console.WriteLine("NOT (filter == null && sequencenumber == 0)       IN         ListingController. filter: " + filter + " + seqnumber: " + sequencenumber);
-                    listings = await listingService.GetAllListings(parameter, filter, sequencenumber);
+                    listings = await listingService.GetListings(parameter, filter, sequencenumber);
                 }
                foreach (Listing l in listings)
                {
@@ -76,6 +53,28 @@ namespace ForagerWebAPIDB.Controllers
                return StatusCode(500, e.Message);
            }
        }
+
+        [HttpGet]
+        [Route("postcode")]
+        public async Task<ActionResult<List<string>>> GetListingPostCodes()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                List<string> listingPostCodes = await listingService.GetListingPostCodes();
+
+                return Ok(listingPostCodes);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Listing>> GetListing(string id)
