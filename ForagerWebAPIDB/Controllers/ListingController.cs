@@ -33,13 +33,11 @@ namespace ForagerWebAPIDB.Controllers
                 List<Listing> listings = new List<Listing>();
                 if (filter == null && sequencenumber == 0)
                 {
-                    Console.WriteLine("(filter == null && sequencenumber == 0)       IN         ListingController");
                     listings = await listingService.GetAllListings(parameter);
                 }
                 else
                 {
-                    Console.WriteLine("NOT (filter == null && sequencenumber == 0)       IN         ListingController. filter: " + filter + " + seqnumber: " + sequencenumber);
-                    listings = await listingService.GetListings(parameter, filter, sequencenumber);
+                   listings = await listingService.GetListings(parameter, filter, sequencenumber);
                 }
                foreach (Listing l in listings)
                {

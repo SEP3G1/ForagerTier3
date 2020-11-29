@@ -13,6 +13,7 @@ namespace ForagerWebAPIDB.Data
     public class ListingService : IListingService
     {
         private ForagerDBContext ctx;
+        public int lazyLoadSequenceValue = 2; //hardcode #patrick
 
         public ListingService(ForagerDBContext ctx)
         {
@@ -45,14 +46,13 @@ namespace ForagerWebAPIDB.Data
             return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
         }
 
-        public async Task<List<Listing>> GetAllListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom?
+        public async Task<List<Listing>> GetAllListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom? Men bruges metoden her overhovedet?
         {
             IQueryable<Listing> q = ctx.listings;
             List<Listing> listings = new List<Listing>();
 
             if (parameter == null || parameter.Length == 0)
             {
-                Console.WriteLine("parameter == null || parameter.Length == 0 - IN GetAllListings(string parameter)");
                 listings = await q.ToListAsync();
             }
             else
@@ -82,32 +82,30 @@ namespace ForagerWebAPIDB.Data
         {
             if(filter == null && sequenceNumber == 0)
             {
-                Console.WriteLine("filter == null && sequenceNumber == 0");
                 return await GetAllListings(parameter);
             }
 
             IQueryable<Listing> q = ctx.listings;
-            Console.WriteLine($"\n\n filter: {filter} \n\n");
-            switch (filter)
-            {
-                case null: q = q.OrderByDescending(l => l.ListingId);
-                    break;
-                case "priceAscending": q = q.OrderBy(l => l.Price);                    
-                    break;
-                case "bestBeforeAscending": q = q.OrderBy(l => l.BestBefore);               
-                    break;
-                case "bestBeforeDescending": q = q.OrderByDescending(l => l.BestBefore);   
-                    break;
-                case "distanceAscending": q = q.OrderByDescending(l => l.Price); //For debugging #patrick
-                    break;
-            }
+            
+          //  switch (filter)
+          //  {
+          //      case null: q = q.OrderByDescending(l => l.ListingId);
+          //          break;
+          //      case "priceAscending": q = q.OrderBy(l => l.Price);                    
+          //          break;
+          //      case "bestBeforeAscending": q = q.OrderBy(l => l.BestBefore);               
+          //          break;
+          //      case "bestBeforeDescending": q = q.OrderByDescending(l => l.BestBefore);   
+          //          break;
+          //      case "distanceAscending": q = q.OrderByDescending(l => l.Price); //For debugging #patrick Virker ikke endnu
+          //          break;
+          //  } //patrick , klar til at slette denne?
 
             List<Listing> listings = new List<Listing>();
 
             if (parameter == null || parameter.Length == 0)
             {
-                Console.WriteLine("parameter == null || parameter.Length == 0 - IN GetAllListings(string parameter, string filter, int sequenceNumber)");
-                listings = await q.Skip(sequenceNumber).Take(2).ToListAsync(); //TODO 2 er hardcode lige nu. #patrick
+                listings = await q.Skip(sequenceNumber).Take(lazyLoadSequenceValue).ToListAsync(); 
             }
             else
             {
@@ -138,7 +136,7 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                         q = q.OrderByDescending(l => l.BestBefore);
                         break;
                     case "distanceAscending":
-                        q = q.OrderByDescending(l => l.Price); //For debugging #patrick
+                        q = q.OrderByDescending(l => l.Price); //For debugging #patrick, virker ikke endnu
                         break;
                     default:
                         q = q.OrderByDescending(l => l.ListingId);
@@ -148,7 +146,7 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
 
                 try
                 {
-                   listings = await q.Skip(sequenceNumber).Take(2).ToListAsync();  ///OBS #patrick klienten skal sige hvor mange den vil have ad gangen. #getridofhardcode
+                    listings = await q.Skip(sequenceNumber).Take(lazyLoadSequenceValue).ToListAsync();
                 }
                 catch (Exception e)
                 {
@@ -188,10 +186,6 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
             {
                 listings = await ctx.listings.Include(l => l.Product).ToListAsync();
 
-                Console.WriteLine("some listings: ");
-
-                listings.ForEach(l => Console.WriteLine(l.ListingId + ", "));
-
                 int count = numberOfListingsWithDistinctProductId();
 
 
@@ -200,7 +194,7 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
 
                         if (l.Product.ImagesString == null)
                     {
-                        l.Product.ImagesString = "no image set"; //#hack #patrick
+                        l.Product.ImagesString = "no image set"; //måske håndter manglende produktbilleder på en anden måde #patrick
                     }
                     //Bruger ImagesString her, for jeg kan simpelthen ikke få den til at getCover / gette Images[0] her... 
                     //prøver om jeg kan konvertere til cover længere oppe. Testet: instantiering af ny Product klasse og kalde ting derpå, mm.. #patrick
@@ -209,7 +203,7 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                     try
                     {
                         listingNamesAndCovers.Add(l.Product.Name, imagesString);
-                  //                          Console.WriteLine("listingNamesAndCovers.Add(l.Product.Name, l.getCover())" + l.Product.Name + ", " + cover);
+                  
                   if(listingNamesAndCovers.Count >= count) { 
                             break; 
                         }
@@ -217,7 +211,6 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                     }
                     catch (ArgumentException e) // Catches exception when 'An item with the same key has already been added.'
                     {
-                        Console.WriteLine("catch (ArgumentException)\n" + e.StackTrace);
                         continue;
                     }
                 }
@@ -234,15 +227,12 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
             //listingNamesAndCovers.ToList().OrderBy(l => l.Key).ToList().ForEach(l => listingNamesAndCoversFinal.Add(l.Key, l.Value));
             listingNamesAndCovers.ToList().ForEach(l => listingNamesAndCoversFinal.Add(l.Key, l.Value));
 
-            Console.WriteLine($"\n\n{nameof(listingNamesAndCoversFinal)}\n\n");
-            listingNamesAndCoversFinal.ToList().ForEach(l => Console.WriteLine($"{l.Key}, {l.Value}"));
             return listingNamesAndCovers;
         }
 
         private int numberOfListingsWithDistinctProductId()
         {
             int count = ctx.listings.GroupBy(l => l.ProductId).Distinct().Count();
-            Console.WriteLine("count: " + count);
             return count;
         }
 
