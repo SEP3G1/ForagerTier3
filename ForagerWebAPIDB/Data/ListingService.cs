@@ -13,7 +13,7 @@ namespace ForagerWebAPIDB.Data
     public class ListingService : IListingService
     {
         private ForagerDBContext ctx;
-        public int lazyLoadSequenceValue = 2; //hardcode #patrick
+        public int lazyLoadSequenceValue = 9; //hardcode #patrick
 
         public ListingService(ForagerDBContext ctx)
         {
@@ -46,7 +46,16 @@ namespace ForagerWebAPIDB.Data
             return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
         }
 
-        public async Task<List<Listing>> GetAllListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom? Men bruges metoden her overhovedet?
+        public async Task<string> GetNumberOfResults(string parameter)
+        {
+            return ctx.listings.Where(l =>
+            l.Product.ProductCategory.Equals(parameter) ||
+            l.Product.Name.Equals(parameter) ||
+            l.Postcode.Equals(parameter)
+            ).Count() + "";
+        }
+
+        public async Task<List<Listing>> GetAllListings(string parameter) //Slet efter næste merge, hvis ingen bruger denne metode? #patrick
         {
             IQueryable<Listing> q = ctx.listings;
             List<Listing> listings = new List<Listing>();
@@ -86,21 +95,6 @@ namespace ForagerWebAPIDB.Data
             }
 
             IQueryable<Listing> q = ctx.listings;
-            
-          //  switch (filter)
-          //  {
-          //      case null: q = q.OrderByDescending(l => l.ListingId);
-          //          break;
-          //      case "priceAscending": q = q.OrderBy(l => l.Price);                    
-          //          break;
-          //      case "bestBeforeAscending": q = q.OrderBy(l => l.BestBefore);               
-          //          break;
-          //      case "bestBeforeDescending": q = q.OrderByDescending(l => l.BestBefore);   
-          //          break;
-          //      case "distanceAscending": q = q.OrderByDescending(l => l.Price); //For debugging #patrick Virker ikke endnu
-          //          break;
-          //  } //patrick , klar til at slette denne?
-
             List<Listing> listings = new List<Listing>();
 
             if (parameter == null || parameter.Length == 0)
@@ -192,12 +186,11 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                 foreach (Listing l in listings)
                 {                   
 
-                        if (l.Product.ImagesString == null)
-                    {
-                        l.Product.ImagesString = "no image set"; //måske håndter manglende produktbilleder på en anden måde #patrick
-                    }
-                    //Bruger ImagesString her, for jeg kan simpelthen ikke få den til at getCover / gette Images[0] her... 
-                    //prøver om jeg kan konvertere til cover længere oppe. Testet: instantiering af ny Product klasse og kalde ting derpå, mm.. #patrick
+                 //       if (l.Product.ImagesString == null)
+                 //   {
+                 //       l.Product.ImagesString = "no image set";
+                 //   }
+
                       string imagesString = l.Product.ImagesString;
 
                     try

@@ -33,7 +33,7 @@ namespace ForagerWebAPIDB.Controllers
                 List<Listing> listings = new List<Listing>();
                 if (filter == null && sequencenumber == 0)
                 {
-                    listings = await listingService.GetAllListings(parameter);
+                    listings = await listingService.GetAllListings(parameter); // Bruges dette kald? Loader alle listings = tung metode.  Slet / refactor? Fx efter næste merge. #patrick
                 }
                 else
                 {
@@ -95,6 +95,28 @@ namespace ForagerWebAPIDB.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("count")]
+        public async Task<ActionResult<List<string>>> GetNumberOfResults([FromQuery] string parameter) //Jeg er i tvivl om dennes return value bør være "List<string>"? #patrick
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string numberOfResults = await listingService.GetNumberOfResults(parameter);
+                return Ok(numberOfResults);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
 
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Listing>> GetListing(string id)
