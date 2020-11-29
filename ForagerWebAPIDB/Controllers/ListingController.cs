@@ -34,7 +34,7 @@ namespace ForagerWebAPIDB.Controllers
                 if (filter == null && sequencenumber == 0)
                 {
                     Console.WriteLine("(filter == null && sequencenumber == 0)       IN         ListingController");
-                    listings = await listingService.GetListings(parameter);
+                    listings = await listingService.GetAllListings(parameter);
                 }
                 else
                 {
@@ -68,6 +68,28 @@ namespace ForagerWebAPIDB.Controllers
                 List<string> listingPostCodes = await listingService.GetListingPostCodes();
 
                 return Ok(listingPostCodes);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("namescovers")]
+        public async Task<ActionResult<List<string>>> GetListingNamesAndCovers()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                Dictionary<string, string> listingNamesAndCovers = await listingService.GetListingNamesAndCovers();
+
+                return Ok(listingNamesAndCovers);
             }
             catch (Exception e)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using ForagerWebAPIDB.DataAccess;
 using ForagerWebAPIDB.Models;
@@ -44,7 +45,7 @@ namespace ForagerWebAPIDB.Data
             return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
         }
 
-        public async Task<List<Listing>> GetListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom?
+        public async Task<List<Listing>> GetAllListings(string parameter) //TODO #patrick implementer skip().Take(), måske det her gør den langsom?
         {
             IQueryable<Listing> q = ctx.listings;
             List<Listing> listings = new List<Listing>();
@@ -82,7 +83,7 @@ namespace ForagerWebAPIDB.Data
             if(filter == null && sequenceNumber == 0)
             {
                 Console.WriteLine("filter == null && sequenceNumber == 0");
-                return await GetListings(parameter);
+                return await GetAllListings(parameter);
             }
 
             IQueryable<Listing> q = ctx.listings;
@@ -176,6 +177,73 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                     Console.WriteLine(e.StackTrace);
                 }
             return listingPostCodes.OrderBy(p => p).ToList();
+        }
+
+        public async Task<Dictionary<string, string>> GetListingNamesAndCovers()
+        {
+            Dictionary<string, string> listingNamesAndCovers = new Dictionary<string, string>();
+            List<Listing> listings = new List<Listing>();
+
+            try
+            {
+                listings = await ctx.listings.Include(l => l.Product).ToListAsync();
+
+                Console.WriteLine("some listings: ");
+
+                listings.ForEach(l => Console.WriteLine(l.ListingId + ", "));
+
+                int count = numberOfListingsWithDistinctProductId();
+
+
+                foreach (Listing l in listings)
+                {                   
+
+                        if (l.Product.ImagesString == null)
+                    {
+                        l.Product.ImagesString = "no image set"; //#hack #patrick
+                    }
+                    //Bruger ImagesString her, for jeg kan simpelthen ikke få den til at getCover / gette Images[0] her... 
+                    //prøver om jeg kan konvertere til cover længere oppe. Testet: instantiering af ny Product klasse og kalde ting derpå, mm.. #patrick
+                      string imagesString = l.Product.ImagesString;
+
+                    try
+                    {
+                        listingNamesAndCovers.Add(l.Product.Name, imagesString);
+                  //                          Console.WriteLine("listingNamesAndCovers.Add(l.Product.Name, l.getCover())" + l.Product.Name + ", " + cover);
+                  if(listingNamesAndCovers.Count >= count) { 
+                            break; 
+                        }
+
+                    }
+                    catch (ArgumentException e) // Catches exception when 'An item with the same key has already been added.'
+                    {
+                        Console.WriteLine("catch (ArgumentException)\n" + e.StackTrace);
+                        continue;
+                    }
+                }
+            }
+
+            catch (Exception e)
+            {
+                Console.WriteLine("Error in GetListingNamesAndCovers");
+                Console.WriteLine(e.StackTrace);
+            }
+            Dictionary<string, string> listingNamesAndCoversFinal = new Dictionary<string, string>();
+
+            // ToList() for at kunne kalde OrderBy(). ToList() igen for at kunne kalde ForEach()
+            //listingNamesAndCovers.ToList().OrderBy(l => l.Key).ToList().ForEach(l => listingNamesAndCoversFinal.Add(l.Key, l.Value));
+            listingNamesAndCovers.ToList().ForEach(l => listingNamesAndCoversFinal.Add(l.Key, l.Value));
+
+            Console.WriteLine($"\n\n{nameof(listingNamesAndCoversFinal)}\n\n");
+            listingNamesAndCoversFinal.ToList().ForEach(l => Console.WriteLine($"{l.Key}, {l.Value}"));
+            return listingNamesAndCovers;
+        }
+
+        private int numberOfListingsWithDistinctProductId()
+        {
+            int count = ctx.listings.GroupBy(l => l.ProductId).Distinct().Count();
+            Console.WriteLine("count: " + count);
+            return count;
         }
 
         public async Task<Product> GetProduct(string id)
