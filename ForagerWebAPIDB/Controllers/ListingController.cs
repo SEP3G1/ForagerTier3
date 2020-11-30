@@ -19,8 +19,42 @@ namespace ForagerWebAPIDB.Controllers
         {
             this.listingService = listingService;
         }
+
+       [HttpGet]
+       public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
+       {
+           if (!ModelState.IsValid)
+           {
+               return BadRequest(ModelState);
+           }
+      
+           try
+           {
+                List<Listing> listings = new List<Listing>();
+                if (filter == null && sequencenumber == 0)
+                {
+                    listings = await listingService.GetAllListings(parameter); // Bruges dette kald? Loader alle listings = tung metode.  Slet / refactor? Fx efter næste merge. #patrick
+                }
+                else
+                {
+                   listings = await listingService.GetListings(parameter, filter, sequencenumber);
+                }
+               foreach (Listing l in listings)
+               {
+                   l.Product = await listingService.GetProduct(l.ProductId + "");
+               }
+               return Ok(listings);
+           }
+           catch (Exception e)
+           {
+               Console.WriteLine(e);
+               return StatusCode(500, e.Message);
+           }
+       }
+
         [HttpGet]
-        public async Task<ActionResult<List<Listing>>> GetAllListings([FromQuery] string parameter)
+        [Route("postcode")]
+        public async Task<ActionResult<List<string>>> GetListingPostCodes()
         {
             if (!ModelState.IsValid)
             {
@@ -29,12 +63,9 @@ namespace ForagerWebAPIDB.Controllers
 
             try
             {
-                List<Listing> listings = await listingService.GetAllListings(parameter);
-                foreach(Listing l in listings)
-                {
-                    l.Product = await listingService.GetProduct(l.ProductId + "");
-                }
-                return Ok(listings);
+                List<string> listingPostCodes = await listingService.GetListingPostCodes();
+
+                return Ok(listingPostCodes);
             }
             catch (Exception e)
             {
@@ -42,6 +73,51 @@ namespace ForagerWebAPIDB.Controllers
                 return StatusCode(500, e.Message);
             }
         }
+
+        [HttpGet]
+        [Route("namescovers")]
+        public async Task<ActionResult<List<string>>> GetListingNamesAndCovers()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                Dictionary<string, string> listingNamesAndCovers = await listingService.GetListingNamesAndCovers();
+
+                return Ok(listingNamesAndCovers);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("count")]
+        public async Task<ActionResult<List<string>>> GetNumberOfResults([FromQuery] string parameter) //Jeg er i tvivl om dennes return value bør være "List<string>"? #patrick
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string numberOfResults = await listingService.GetNumberOfResults(parameter);
+                return Ok(numberOfResults);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Listing>> GetListing(string id)
         {
