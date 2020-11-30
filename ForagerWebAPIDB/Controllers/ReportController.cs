@@ -21,7 +21,7 @@ namespace ForagerWebAPIDB.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<Product>> GetAllReports()
+        public async Task<ActionResult<List<Report>>> GetAllReports()
         {
             if (!ModelState.IsValid)
             {

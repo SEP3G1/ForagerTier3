@@ -45,5 +45,35 @@ namespace ForagerWebAPIDB.Data
             await ctx.SaveChangesAsync();
             return companyToUpdate.CompanyId + "";
         }
+
+        public async Task<string> DeleteCompanyWish(int id)
+        {
+            Company companyToUpdate = ctx.Companies.First(c => c.CompanyId == id);
+            companyToUpdate.WishDeletion = true;
+
+            ctx.Companies.Update(companyToUpdate);
+            await ctx.SaveChangesAsync();
+            return companyToUpdate.CompanyId + "";
+        }
+        public async Task<string> DeleteCompany(int id)
+        {
+            Company toRemove = ctx.Companies.First(c => c.CompanyId == id);
+            ctx.Remove(toRemove);
+            await ctx.SaveChangesAsync();
+            return "Success";
+        }
+        
+        public async Task<List<Company>> GetCompaniesToDelete()
+        {
+            List<Company> allCompanies = await ctx.Companies.ToListAsync();
+            List<Company> companiesToDelete = new List<Company>();
+            foreach (var c in allCompanies)
+            {
+                if (c.WishDeletion)
+                    companiesToDelete.Add(c);
+            }
+
+            return companiesToDelete;
+        }
     }
 }
