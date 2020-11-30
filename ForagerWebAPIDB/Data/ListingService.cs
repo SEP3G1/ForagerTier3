@@ -72,7 +72,11 @@ namespace ForagerWebAPIDB.Data
         public async Task<Listing> GetListing(string id)
         {
             int idInt = int.Parse(id);
-            return await ctx.listings.FirstAsync(c => c.ListingId == idInt);
+            Listing listing = await ctx.listings.FirstAsync(c => c.ListingId == idInt);
+            listing.NumberOfViews++;
+            ctx.Update(listing);
+            await ctx.SaveChangesAsync();
+            return listing;
         }
         public async Task<Product> GetProduct(string id)
         {
