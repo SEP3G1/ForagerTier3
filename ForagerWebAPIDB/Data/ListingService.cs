@@ -113,11 +113,11 @@ namespace ForagerWebAPIDB.Data
         public async Task<List<Listing>> GetListings(string parameter, string filter, int sequenceNumber)
         {
 
-            if ((filter == null || filter == "null") && sequenceNumber == 0)
+            if ((filter == null || filter == "null") && sequenceNumber == 0 && (parameter == null || parameter == "null"))
             {
-                return await GetAllListings(parameter);
+                return await GetAllListings(parameter); //evt optimere performance her, for bedre scalability, så det ikke er alle listings der hentes. #patrick
             }
-
+                
             IQueryable<Listing> q = ctx.listings;
             List<Listing> listings = new List<Listing>();
 
@@ -138,7 +138,7 @@ l.Postcode.Equals(parameter)
 );
 
                 /*Når jeg har forsøgt at kalde "OrderByDescending" tidligere end dette, så virker sorteringen ikke,
-mens jeg sorteringen virker fint, hvis "OrderBy" kaldes tidligere. 
+mens sorteringen virker fint, hvis "OrderBy" kaldes tidligere. 
 Jeg tror det skyldes at "Linq to Entities does not guarantee to maintain the order established by OrderByDescending()"
 som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydescending-first-and-the-nefarious-defaultifempty/7615289#7615289
 */
@@ -152,9 +152,6 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                         break;
                     case "bestBeforeDescending":
                         q = q.OrderByDescending(l => l.BestBefore);
-                        break;
-                    case "distanceAscending":
-                        q = q.OrderByDescending(l => l.Price); //For debugging #patrick, virker ikke endnu
                         break;
                     default:
                         q = q.OrderByDescending(l => l.ListingId);
