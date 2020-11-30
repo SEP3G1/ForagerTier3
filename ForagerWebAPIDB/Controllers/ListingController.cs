@@ -23,6 +23,7 @@ namespace ForagerWebAPIDB.Controllers
        [HttpGet]
        public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
        {
+            Console.WriteLine($"parameter: {parameter}, filter: {filter}, sn: {sequencenumber}");
            if (!ModelState.IsValid)
            {
                return BadRequest(ModelState);
@@ -31,18 +32,11 @@ namespace ForagerWebAPIDB.Controllers
            try
            {
                 List<Listing> listings = new List<Listing>();
-                if (filter == null && sequencenumber == 0)
-                {
-                    listings = await listingService.GetAllListings(parameter); // Bruges dette kald? Loader alle listings = tung metode.  Slet / refactor? Fx efter næste merge. #patrick
-                }
-                else
-                {
-                   listings = await listingService.GetListings(parameter, filter, sequencenumber);
-                }
-               foreach (Listing l in listings)
-               {
-                   l.Product = await listingService.GetProduct(l.ProductId + "");
-               }
+                listings = await listingService.GetListings(parameter, filter, sequencenumber);
+                foreach (Listing l in listings)
+                   {
+                       l.Product = await listingService.GetProduct(l.ProductId + "");
+                   }
                return Ok(listings);
            }
            catch (Exception e)
