@@ -15,6 +15,7 @@ namespace ForagerWebAPIDB.Models
         public int ListingId { get; set; }
         public int UserId { get; set; }
         public int ProductId { get; set; }
+        public int CompanyId { get; set; }
 
         [Required]
         public Product Product { get; set; }

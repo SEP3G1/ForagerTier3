@@ -2,14 +2,16 @@
 using ForagerWebAPIDB.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ForagerWebAPIDB.Migrations
 {
     [DbContext(typeof(ForagerDBContext))]
-    partial class ForagerDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201201092337_ListingUpdate")]
+    partial class ListingUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +68,6 @@ namespace ForagerWebAPIDB.Migrations
                     b.Property<string>("Comment")
                         .HasMaxLength(512)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("HasDelivery")
                         .HasColumnType("INTEGER");
