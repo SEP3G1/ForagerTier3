@@ -7,5 +7,6 @@ namespace ForagerWebAPIDB.Data
     {
         Task<User> ValidateUserAsync(string Email, string Password);
         Task<User> GetUserAsync(int Id);
+        Task<string> CreateUserAsync(User user);
     }
 }

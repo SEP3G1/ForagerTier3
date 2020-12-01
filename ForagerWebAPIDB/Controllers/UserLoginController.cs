@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using ForagerWebAPIDB.Data;
 using ForagerWebAPIDB.Models;
+using System.Text.Json;
 
 namespace ForagerWebAPIDB.Controllers
 {
@@ -46,6 +47,26 @@ namespace ForagerWebAPIDB.Controllers
             {
                 Console.WriteLine(e);
 
+                return StatusCode(500, e.Message);
+            }
+        }
+        [HttpPost]
+        public async Task<ActionResult<string>> CreateUser([FromQuery] string userAsString)
+        {
+            User user = JsonSerializer.Deserialize<User>(userAsString);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string id = await users.CreateUserAsync(user);
+                return Ok(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
                 return StatusCode(500, e.Message);
             }
         }
