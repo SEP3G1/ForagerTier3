@@ -44,7 +44,7 @@ namespace ForagerWebAPIDB.Data
             List<Listing> listings = new List<Listing>();
             if (parameter == null || parameter == "null" || parameter.Length == 0)
             {
-                listings = await q.Take(25).ToListAsync();
+                listings = await q.OrderByDescending(c => c.ListingId).Take(25).ToListAsync();
             }
             else
             {
@@ -251,5 +251,9 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
             return count;
         }
 
+        public async Task<List<Listing>> GetListingsFromCompany(int id)
+        {
+            return await ctx.listings.Where(l => l.CompanyId == id && !l.IsArchived).ToListAsync();
+        }
     }
 }
