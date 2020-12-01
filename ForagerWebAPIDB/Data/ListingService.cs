@@ -113,7 +113,7 @@ namespace ForagerWebAPIDB.Data
         public async Task<List<Listing>> GetListings(string parameter, string filter, int sequenceNumber)
         {
 
-            if ((filter == null || filter == "null") && sequenceNumber == 0)
+            if ((filter == null || filter == "null") && sequenceNumber == 0 && (parameter == null || parameter == "null"))
             {
                 return await GetAllListings(parameter);
             }
@@ -152,9 +152,6 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                         break;
                     case "bestBeforeDescending":
                         q = q.OrderByDescending(l => l.BestBefore);
-                        break;
-                    case "distanceAscending":
-                        q = q.OrderByDescending(l => l.Price); //For debugging #patrick, virker ikke endnu
                         break;
                     default:
                         q = q.OrderByDescending(l => l.ListingId);
