@@ -177,8 +177,8 @@ namespace ForagerWebAPIDB.Controllers
             }
         }
 
-        [HttpDelete("{listingid}")]
-        public async Task<ActionResult<string>> DeleteListing(int listingId)
+        [HttpPut]
+        public async Task<ActionResult<string>> DeleteListing([FromQuery] int listingId)
         {
             if (!ModelState.IsValid)
             {

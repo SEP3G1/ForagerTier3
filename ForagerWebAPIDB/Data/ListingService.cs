@@ -40,7 +40,7 @@ namespace ForagerWebAPIDB.Data
         }
         public async Task<List<Listing>> GetAllListings(string parameter)
         {
-            IQueryable<Listing> q = ctx.listings;
+            IQueryable<Listing> q = ctx.listings.Where(c => c.IsArchived == false);
             List<Listing> listings = new List<Listing>();
             if (parameter == null || parameter == "null" || parameter.Length == 0)
             {
@@ -257,8 +257,8 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
         public async Task<string> DeleteListing(int listingId)
         {
             Listing toRemove = ctx.listings.First(l => l.ListingId == listingId);
-            ctx.Remove(toRemove);
-            await ctx.SaveChangesAsync();
+            toRemove.IsArchived = true;
+            await UpdateListing(toRemove);
             return "Success";
         }
     }
