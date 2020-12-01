@@ -2,14 +2,16 @@
 using ForagerWebAPIDB.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace ForagerWebAPIDB.Migrations
 {
     [DbContext(typeof(ForagerDBContext))]
-    partial class ForagerDBContextModelSnapshot : ModelSnapshot
+    [Migration("20201125105648_ReportMigration")]
+    partial class ReportMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,9 +46,6 @@ namespace ForagerWebAPIDB.Migrations
 
                     b.Property<double>("TrustScore")
                         .HasColumnType("REAL");
-
-                    b.Property<bool>("WishDeletion")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("CompanyId");
 
@@ -164,13 +163,14 @@ namespace ForagerWebAPIDB.Migrations
 
                     b.HasIndex("ListingId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Report");
                 });
 
             modelBuilder.Entity("ForagerWebAPIDB.Models.User", b =>
                 {
                     b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
+                        .HasMaxLength(16)
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CompanyId")

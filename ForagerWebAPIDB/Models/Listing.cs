@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace ForagerWebAPIDB.Models
@@ -39,6 +40,8 @@ namespace ForagerWebAPIDB.Models
         public bool IsArchived { get; set; }
         [MaxLength(512)]
         public string Comment { get; set; }
+        [JsonIgnore]
+        public List<Report> Reports { get; set; }
         [NotMapped] public List<string> Pictures { get; set; }
 
         public Listing()

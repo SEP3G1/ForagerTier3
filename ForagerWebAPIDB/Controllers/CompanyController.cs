@@ -20,6 +20,26 @@ namespace ForagerWebAPIDB.Controllers
             this.companyService = companyService;
         }
 
+        [HttpGet]
+        public async Task<ActionResult<List<Company>>> GetCompaniesToDelete()
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                List<Company> companiesToDelete = await companyService.GetCompaniesToDelete();
+                return Ok(companiesToDelete);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpGet("{id:int}")]
         public async Task<ActionResult<Company>> GetCompany(string id)
         {
@@ -77,6 +97,44 @@ namespace ForagerWebAPIDB.Controllers
             {
                 string id = await companyService.UpdateCompany(company);
                 return Ok(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult<string>> DeleteCompanyWish(string id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            try
+            {
+                string toReturn = await companyService.DeleteCompanyWish(Int32.Parse(id));
+                return Ok(toReturn);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("{companyid}")]
+        public async Task<ActionResult<string>> DeleteListing(int companyId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string message = await companyService.DeleteCompany(companyId);
+                return Ok(message);
             }
             catch (Exception e)
             {

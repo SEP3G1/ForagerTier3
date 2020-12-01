@@ -11,5 +11,8 @@ namespace ForagerWebAPIDB.Data
         Task<string> CreateCompany(Company company);
         Task<Company> GetCompany(string id);
         Task<string> UpdateCompany(Company company);
+        Task<string> DeleteCompanyWish(int id);
+        Task<string> DeleteCompany(int id);
+        Task<List<Company>> GetCompaniesToDelete();
     }
 }

@@ -253,5 +253,13 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
             int count = ctx.listings.GroupBy(l => l.ProductId).Distinct().Count();
             return count;
         }
+
+        public async Task<string> DeleteListing(int listingId)
+        {
+            Listing toRemove = ctx.listings.First(l => l.ListingId == listingId);
+            ctx.Remove(toRemove);
+            await ctx.SaveChangesAsync();
+            return "Success";
+        }
     }
 }

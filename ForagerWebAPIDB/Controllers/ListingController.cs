@@ -123,7 +123,8 @@ namespace ForagerWebAPIDB.Controllers
             try
             {
                 Listing listing = await listingService.GetListing(id);
-                listing.Product = await listingService.GetProduct(listing.ProductId + "");
+                if (listing != null)
+                    listing.Product = await listingService.GetProduct(listing.ProductId + "");
                 return Ok(listing);
             }
             catch (Exception e)
@@ -168,6 +169,26 @@ namespace ForagerWebAPIDB.Controllers
             {
                 string id = await listingService.UpdateListing(listing);
                 return Ok(id);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpDelete("{listingid}")]
+        public async Task<ActionResult<string>> DeleteListing(int listingId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                string message = await listingService.DeleteListing(listingId);
+                return Ok(message);
             }
             catch (Exception e)
             {

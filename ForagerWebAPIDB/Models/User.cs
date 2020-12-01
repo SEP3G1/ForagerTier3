@@ -5,7 +5,7 @@ namespace ForagerWebAPIDB.Models
 {
     public class User
     {
-        [Key, MaxLength(16)]
+        [Key]
         public int UserId { get; set; }
         [Required, MaxLength(32)]
         public string Name { get; set; }
