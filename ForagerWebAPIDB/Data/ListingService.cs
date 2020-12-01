@@ -254,12 +254,5 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
             return count;
         }
 
-        public async Task<string> DeleteListing(int listingId)
-        {
-            Listing toRemove = ctx.listings.First(l => l.ListingId == listingId);
-            toRemove.IsArchived = true;
-            await UpdateListing(toRemove);
-            return "Success";
-        }
     }
 }

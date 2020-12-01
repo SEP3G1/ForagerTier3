@@ -176,25 +176,5 @@ namespace ForagerWebAPIDB.Controllers
                 return StatusCode(500, e.Message);
             }
         }
-
-        [HttpPut]
-        public async Task<ActionResult<string>> DeleteListing([FromQuery] int listingId)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            try
-            {
-                string message = await listingService.DeleteListing(listingId);
-                return Ok(message);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                return StatusCode(500, e.Message);
-            }
-        }
     }
 }
