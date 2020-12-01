@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using ForagerWebAPIDB.DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ForagerWebAPIDB.Data
 {
@@ -27,6 +28,13 @@ namespace ForagerWebAPIDB.Data
             //2 = Cam view, create and delete ToDos determined by Role
         }
 
+        public async Task<string> CreateUserAsync(User user)
+        {
+            EntityEntry<User> newlyAdded = await ctx.Users.AddAsync(user);
+            await ctx.SaveChangesAsync();
+            return newlyAdded.Entity.UserId + "";
+        }
+
         public async Task<User> GetUserAsync(int Id)
         {
             return await ctx.Users.FirstAsync(u => u.UserId == Id);
@@ -47,5 +55,6 @@ namespace ForagerWebAPIDB.Data
             user = first;
             return first;
         }
+
     }
 }
