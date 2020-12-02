@@ -23,7 +23,7 @@ namespace ForagerWebAPIDB.Data
         {
             bool alreadyExists = ctx.Companies.Any(c => c.Cvr == company.Cvr);
             if (alreadyExists){
-                return null;
+                return "alreadyExists";
             }
             else
             {
