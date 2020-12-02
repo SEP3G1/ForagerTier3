@@ -21,7 +21,7 @@ namespace ForagerWebAPIDB.Controllers
         }
 
        [HttpGet]
-       public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
+       public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber, int resultstoreturn)
        {
            if (!ModelState.IsValid)
            {
@@ -31,7 +31,7 @@ namespace ForagerWebAPIDB.Controllers
            try
            {
                 List<Listing> listings = new List<Listing>();
-                listings = await listingService.GetListings(parameter, filter, sequencenumber);
+                listings = await listingService.GetListings(parameter, filter, sequencenumber, resultstoreturn);
                 foreach (Listing l in listings)
                    {
                        l.Product = await listingService.GetProduct(l.ProductId + "");
