@@ -50,20 +50,15 @@ namespace ForagerWebAPIDB.Data
             if (since > 0) { 
                 foreach(Report report in reports)
                 {
-                    Console.WriteLine("foreach(Report report in reports)");
                     long timeOfReport = (long)Convert.ToDouble(report.Time);
                     if(timeOfReport > since)
-                    {
                         numberOfReports += 1;
-                    }
                 }
                 // q = q.Where(r => (long)Convert.ToDouble(r.Time) >= since); virker ikke... "Translation of method 'System.Convert.ToDouble' failed." #patrick
                 // https://forums.asp.net/t/2077863.aspx?Convert+ToDouble+Conversions+in+Linq
 
             }
 
-            //numberOfReports = q.ToList().Count();
-            Console.WriteLine("GetNumberOfReports: " + numberOfReports);
             return numberOfReports;
         }
     }
