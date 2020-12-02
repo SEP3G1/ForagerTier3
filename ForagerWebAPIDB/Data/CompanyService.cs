@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace ForagerWebAPIDB.Data
 {
@@ -27,6 +28,8 @@ namespace ForagerWebAPIDB.Data
             }
             else
             {
+                company.Name = WebUtility.HtmlDecode(company.Name).Replace("+", " ");
+                company.Address = WebUtility.HtmlDecode(company.Address).Replace("+", " ");
                 EntityEntry<Company> newlyAdded = await ctx.Companies.AddAsync(company);
                 await ctx.SaveChangesAsync();
                 return newlyAdded.Entity.CompanyId + "";
@@ -36,11 +39,16 @@ namespace ForagerWebAPIDB.Data
         public async Task<Company> GetCompany(string id)
         {
             int idInt = int.Parse(id);
-            return await ctx.Companies.FirstAsync(c => c.CompanyId == idInt);
+            Company c = await ctx.Companies.FirstAsync(c => c.CompanyId == idInt);
+            c.Name = WebUtility.HtmlEncode(c.Name);
+            c.Address = WebUtility.HtmlEncode(c.Address);
+            return c;
         }
 
         public async Task<string> UpdateCompany(Company company)
         {
+            company.Name = WebUtility.HtmlDecode(company.Name).Replace("+", " ");
+            company.Address = WebUtility.HtmlDecode(company.Address).Replace("+", " ");
             Company companyToUpdate = ctx.Companies.First(c => c.CompanyId == company.CompanyId);
             companyToUpdate.Cvr = company.Cvr;
             companyToUpdate.PostCode = company.PostCode;
@@ -77,7 +85,11 @@ namespace ForagerWebAPIDB.Data
             foreach (var c in allCompanies)
             {
                 if (c.WishDeletion)
+                {
+                    c.Name = WebUtility.HtmlEncode(c.Name);
+                    c.Address = WebUtility.HtmlEncode(c.Address);
                     companiesToDelete.Add(c);
+                }
             }
 
             return companiesToDelete;

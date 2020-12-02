@@ -23,7 +23,6 @@ namespace ForagerWebAPIDB.Controllers
        [HttpGet]
        public async Task<ActionResult<List<Listing>>> GetLazyFilteredListings([FromQuery] string parameter, string filter, int sequencenumber)
        {
-            Console.WriteLine($"parameter: {parameter}, filter: {filter}, sn: {sequencenumber}");
            if (!ModelState.IsValid)
            {
                return BadRequest(ModelState);
