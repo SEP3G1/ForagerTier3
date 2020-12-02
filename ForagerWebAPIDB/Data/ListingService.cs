@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using ForagerWebAPIDB.DataAccess;
 using ForagerWebAPIDB.Models;
@@ -21,6 +22,8 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<string> CreateListing(Listing listing)
         {
+            listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
+            listing.PickupAddress = WebUtility.HtmlDecode(listing.PickupAddress).Replace("+", " ");
             //If product is not set to null the product will be added to db twice
             listing.Product = null;
             EntityEntry<Listing> newlyAdded = await ctx.listings.AddAsync(listing);
@@ -30,6 +33,8 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<string> UpdateListing(Listing listing)
         {
+            listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
+            listing.PickupAddress = WebUtility.HtmlDecode(listing.PickupAddress).Replace("+", " ");
             //If product is not set to null the product will be added to db twice
             listing.Product = null; 
             ctx.listings.Attach(listing);
@@ -66,6 +71,13 @@ namespace ForagerWebAPIDB.Data
                     Console.WriteLine(e.StackTrace);
                 }
             }
+
+            foreach(Listing listing in listings)
+            {
+                listing.Comment = WebUtility.HtmlEncode(listing.Comment);
+                listing.PickupAddress = WebUtility.HtmlEncode(listing.PickupAddress);
+            }
+
             return listings.OrderByDescending(o => o.ListingId).ToList();
         }
 
@@ -76,6 +88,8 @@ namespace ForagerWebAPIDB.Data
             listing.NumberOfViews++;
             ctx.Update(listing);
             await ctx.SaveChangesAsync();
+            listing.Comment = WebUtility.HtmlEncode(listing.Comment);
+            listing.PickupAddress = WebUtility.HtmlEncode(listing.PickupAddress);
             return listing;
         }
         public async Task<Product> GetProduct(string id)
@@ -169,6 +183,11 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
                     Console.WriteLine(e.StackTrace);
                 }
             }
+            foreach(Listing listing in listings)
+            {
+                listing.Comment = WebUtility.HtmlEncode(listing.Comment);
+                listing.PickupAddress = WebUtility.HtmlEncode(listing.PickupAddress);
+            }
             return listings;
         }
 
@@ -253,7 +272,14 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
 
         public async Task<List<Listing>> GetListingsFromCompany(int id)
         {
-            return await ctx.listings.Where(l => l.CompanyId == id && !l.IsArchived).ToListAsync();
+            List<Listing> listings = await ctx.listings.Where(l => l.CompanyId == id && !l.IsArchived).ToListAsync();
+            foreach(Listing listing in listings)
+            {
+                listing.Comment = WebUtility.HtmlEncode(listing.Comment);
+                listing.PickupAddress = WebUtility.HtmlEncode(listing.PickupAddress);
+            }
+
+            return listings;
         }
     }
 }
