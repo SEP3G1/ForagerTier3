@@ -21,9 +21,16 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<string> CreateCompany(Company company)
         {
-            EntityEntry<Company> newlyAdded = await ctx.Companies.AddAsync(company);
-            await ctx.SaveChangesAsync();
-            return newlyAdded.Entity.CompanyId + "";
+            bool alreadyExists = ctx.Companies.Any(c => c.Cvr == company.Cvr);
+            if (alreadyExists){
+                return "alreadyExists";
+            }
+            else
+            {
+                EntityEntry<Company> newlyAdded = await ctx.Companies.AddAsync(company);
+                await ctx.SaveChangesAsync();
+                return newlyAdded.Entity.CompanyId + "";
+            }
         }
 
         public async Task<Company> GetCompany(string id)
