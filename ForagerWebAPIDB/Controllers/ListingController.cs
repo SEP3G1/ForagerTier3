@@ -47,6 +47,31 @@ namespace ForagerWebAPIDB.Controllers
        }
 
         [HttpGet]
+        [Route("companyListings/{id:int}")]
+        public async Task<ActionResult<List<Listing>>> GetListingsFromCompany(int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                List<Listing> listings = await listingService.GetListingsFromCompany(id);
+                foreach (Listing l in listings)
+                {
+                    l.Product = await listingService.GetProduct(l.ProductId + "");
+                }
+                return Ok(listings);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
+        [HttpGet]
         [Route("postcode")]
         public async Task<ActionResult<List<string>>> GetListingPostCodes()
         {
