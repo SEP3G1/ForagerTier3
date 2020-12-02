@@ -10,5 +10,6 @@ namespace ForagerWebAPIDB.Data
     {
         Task<string> CreateListingReport(Report report);
         Task<List<Report>> GetReports();
+        Task<int> GetNumberOfReports(string userid, long since);
     }
 }

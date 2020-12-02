@@ -40,6 +40,34 @@ namespace ForagerWebAPIDB.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("numberofreports")]
+        public async Task<ActionResult<List<Report>>> GetNumberOfReports([FromQuery] string userid, string since)
+        {
+            long sinceLong = 0;
+
+            if (since == "lasthour")
+            {
+                sinceLong = DateTime.Now.AddHours(-1).Ticks;
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                int numberOfReports = await reportService.GetNumberOfReports(userid, sinceLong); //#patrick husk også timestamp
+                return Ok(numberOfReports);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return StatusCode(500, e.Message);
+            }
+        }
+
         [HttpPost("{Report}")]
         public async Task<ActionResult<string>> CreateListingReport(string Report)
         {
