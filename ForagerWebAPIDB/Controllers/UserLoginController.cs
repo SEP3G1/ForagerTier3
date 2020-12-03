@@ -41,6 +41,11 @@ namespace ForagerWebAPIDB.Controllers
             try
             {
                 user = await users.GetUserAsync(id);
+                if (user == null)
+                {
+                    user = new User();
+                    user.CompanyId = -1;
+                }
                 return Ok(user);
             }
             catch (Exception e)

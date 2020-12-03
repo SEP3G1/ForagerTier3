@@ -74,6 +74,13 @@ namespace ForagerWebAPIDB.Data
         {
             Company toRemove = ctx.Companies.First(c => c.CompanyId == id);
             ctx.Remove(toRemove);
+
+            List<Listing> listingsToArchive = await ctx.listings.Where(l => l.CompanyId == id && !l.IsArchived).ToListAsync();
+            foreach (Listing listing in listingsToArchive)
+            {
+                listing.IsArchived = true;
+                ctx.listings.Update(listing);
+            }
             await ctx.SaveChangesAsync();
             return "Success";
         }

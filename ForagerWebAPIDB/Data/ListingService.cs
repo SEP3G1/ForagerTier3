@@ -22,7 +22,8 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<string> CreateListing(Listing listing)
         {
-            listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
+            if (listing.Comment != null)
+                listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
             listing.PickupAddress = WebUtility.HtmlDecode(listing.PickupAddress).Replace("+", " ");
             //If product is not set to null the product will be added to db twice
             listing.Product = null;
@@ -33,7 +34,8 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<string> UpdateListing(Listing listing)
         {
-            listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
+            if (listing.Comment != null)
+                listing.Comment = WebUtility.HtmlDecode(listing.Comment).Replace("+", " ");
             listing.PickupAddress = WebUtility.HtmlDecode(listing.PickupAddress).Replace("+", " ");
             //If product is not set to null the product will be added to db twice
             listing.Product = null; 

@@ -37,7 +37,7 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<User> GetUserAsync(int Id)
         {
-            return await ctx.Users.FirstAsync(u => u.UserId == Id);
+            return await ctx.Users.FirstOrDefaultAsync(u => u.UserId == Id);
         }
 
         public async Task<User> ValidateUserAsync(string Email, string password)
