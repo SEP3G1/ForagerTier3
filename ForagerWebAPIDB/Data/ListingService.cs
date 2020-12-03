@@ -13,7 +13,6 @@ namespace ForagerWebAPIDB.Data
     public class ListingService : IListingService
     {
         private ForagerDBContext ctx;
-        public int lazyLoadSequenceValue = 9; //hardcode #patrick
 
         public ListingService(ForagerDBContext ctx)
         {
@@ -126,7 +125,7 @@ namespace ForagerWebAPIDB.Data
             l.Postcode.Equals(parameter)
             ).Count() + "";
         }
-        public async Task<List<Listing>> GetListings(string parameter, string filter, int sequenceNumber)
+        public async Task<List<Listing>> GetListings(string parameter, string filter, int sequenceNumber, int resultsToReturn)
         {
 
             if ((filter == null || filter == "null") && sequenceNumber == 0 && (parameter == null || parameter == "null"))
@@ -139,7 +138,7 @@ namespace ForagerWebAPIDB.Data
 
             if (parameter == null || parameter.Length == 0 || parameter.Equals(null))
             {
-                listings = await q.Skip(sequenceNumber).Take(lazyLoadSequenceValue).ToListAsync();
+                listings = await q.Skip(sequenceNumber).Take(resultsToReturn).ToListAsync();
             }
             else
             {
@@ -177,7 +176,7 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
 
                 try
                 {
-                    listings = await q.Skip(sequenceNumber).Take(lazyLoadSequenceValue).ToListAsync();
+                    listings = await q.Skip(sequenceNumber).Take(resultsToReturn).ToListAsync();
                 }
                 catch (Exception e)
                 {
@@ -227,11 +226,6 @@ som beskrevet her: https://stackoverflow.com/questions/7615237/linq-orderbydesce
 
                 foreach (Listing l in listings)
                 {
-
-                    //       if (l.Product.ImagesString == null)
-                    //   {
-                    //       l.Product.ImagesString = "no image set";
-                    //   }
 
                     string imagesString = l.Product.ImagesString;
 
