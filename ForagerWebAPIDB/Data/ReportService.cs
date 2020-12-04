@@ -26,7 +26,18 @@ namespace ForagerWebAPIDB.Data
 
         public async Task<List<Report>> GetReports()
         {
-            return await ctx.Reports.ToListAsync();
+            List<Report> reports = await ctx.Reports.ToListAsync();
+            List<Listing> listingsToGet = await ctx.listings.ToListAsync();
+            List<Report> reportsToShow = new List<Report>();
+            foreach(Report r in reports)
+            {
+                foreach(Listing l in listingsToGet) 
+                {
+                    if (r.ListingId == l.ListingId && !l.IsArchived)
+                        reportsToShow.Add(r);
+                }
+            }
+            return reportsToShow;
         }
 
         public async Task<int> GetNumberOfReports(string userid, long since) //+ parameter since ticks.. #patrick
